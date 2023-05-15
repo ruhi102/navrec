@@ -1,27 +1,32 @@
-import React from "react";
-import '/home/ruhi/navrec/src/recipe/rec.css';
+import React, { useEffect, useState } from "react";
+import "./rec.css";
+import { Link } from 'react-router-dom';
 
 function App() {
+  const [recipes, setRecipes] = useState([]);
+
+  useEffect(() => {
+    const getRecipes = async () => {
+      const API_KEY =
+        "https://api.spoonacular.com/recipes/complexSearch?apiKey=9c1c493eb73741d9adf01c61f3d5aa21&query=italian&number=19&instructionsRequired=true";
+      const response = await fetch(API_KEY);
+      const data = await response.json();
+      console.log(data);
+      setRecipes(data.results);
+    };
+    getRecipes();
+  }, []);
+
   return (
     <div className="wrapper">
-      <Card
-        img="https://images.unsplash.com/photo-1536304929831-ee1ca9d44906?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-        title="The Everyday Salad"
-        description="Take your boring salads up a knotch. This recipe is perfect for lunch
-          and only contains 5 ingredients!"
-      />
-
-      <Card
-        img="https://images.unsplash.com/photo-1476124369491-e7addf5db371?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-        title="Simple Risotto"
-        description="Fear Risotto no more! This simple recipe is perfect for family dinners."
-      />
-
-      <Card
-        img="https://images.unsplash.com/photo-1529928520614-7c76e2d99740?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ"
-        title="Baked Cod with Vegetables"
-        description="Baked Cod with Vegetables. 30 minute meal!"
-      />
+      {recipes && recipes.map((recipe) => (
+        <Card
+          key={recipe.id}
+          img={recipe.image}
+          title={recipe.title}
+          id={recipe.id}
+        />
+      ))}
     </div>
   );
 }
@@ -30,11 +35,12 @@ function Card(props) {
   return (
     <div className="card">
       <div className="card__body">
-        <img src={props.img} alt="Food" class="card__image" />
+        <img src={props.img} alt={props.title} className="card__image" />
         <h2 className="card__title">{props.title}</h2>
-        <p className="card__description">{props.description}</p>
       </div>
+      <Link to={`/viewrecipe/${props.id}`}> 
       <button className="card__btn">View Recipe</button>
+    </Link>
     </div>
   );
 }
